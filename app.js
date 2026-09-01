@@ -5,6 +5,7 @@ const bookRoutes = require("./routes/books");
 const authRoutes = require("./routes/auth");
 const { readBooksFromStream } = require("./utils/streamReader");
 const { getAllBooks } = require("./modules/books");
+const { errorHandler, notFound } = require("./middleware/error");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -35,22 +36,8 @@ app.get("/about", (req, res) => {
 app.use("/books", bookRoutes);
 app.use("/", authRoutes);
 
-async function startServer() {
-  await connectDB();
+// Error handling middleware
+app.use(notFound);
+app.use(errorHandler);
 
-  readBooksFromStream()
-    .then((books) => {
-      console.log("Books read from stream:", books);
-    })
-    .catch((error) => {
-      console.error("Stream read error:", error.message);
-    });
-
-  console.log("Books from module:", getAllBooks());
-
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-}
-
-startServer();
+module.exports = app;
