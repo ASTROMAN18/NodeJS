@@ -7,11 +7,16 @@ const PORT = process.env.PORT || 3000;
 
 async function startServer() {
   try {
-    // Connect to database
-    await connectDB();
-    console.log("Database connected successfully");
+    // Connect to database (don't block server startup)
+    connectDB()
+      .then(() => {
+        console.log("Database connected successfully");
+      })
+      .catch((error) => {
+        console.error("Database connection failed:", error.message);
+      });
 
-    // Read books from stream
+    // Read books from stream (non-blocking)
     readBooksFromStream()
       .then((books) => {
         console.log("Books read from stream:", books);
