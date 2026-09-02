@@ -3,12 +3,14 @@ const mongoose = require("mongoose");
 async function connectDB() {
   try {
     if (!process.env.MONGODB_URI) {
-      throw new Error("MONGODB_URI environment variable is not defined");
+      console.warn("MONGODB_URI environment variable is not defined - running without database");
+      return;
     }
 
     await mongoose.connect(process.env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 30000,
       socketTimeoutMS: 45000,
+      connectTimeoutMS: 30000,
     });
 
     mongoose.connection.on("error", (err) => {
@@ -25,7 +27,8 @@ async function connectDB() {
 
   } catch (error) {
     console.error("MongoDB connection error:", error.message);
-    throw error;
+    // Don't throw error to allow server to start without DB
+    console.warn("Server will continue without database connection");
   }
 }
 
