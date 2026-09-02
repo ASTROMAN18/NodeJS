@@ -10,11 +10,6 @@ async function connectDB() {
       return;
     }
 
-    // Add database name if not present
-    if (!mongoUri.includes('/bookstore') && !mongoUri.includes('?')) {
-      mongoUri = mongoUri.replace(/\/$/, '') + '/bookstore';
-    }
-
     await mongoose.connect(mongoUri, {
       serverSelectionTimeoutMS: 30000,
       socketTimeoutMS: 45000,
