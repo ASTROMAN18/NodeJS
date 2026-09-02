@@ -5,16 +5,23 @@ async function connectDB() {
     // Use Railway's MONGO_URL or fall back to MONGODB_URI
     let mongoUri = process.env.MONGO_URL || process.env.MONGODB_URI;
     
+    console.log("Attempting to connect to MongoDB...");
+    console.log("Connection string available:", !!mongoUri);
+    
     if (!mongoUri) {
       console.warn("MongoDB connection string not found - running without database");
       return;
     }
 
-    await mongoose.connect(mongoUri, {
+    // Add options for better connection handling
+    const options = {
       serverSelectionTimeoutMS: 30000,
       socketTimeoutMS: 45000,
       connectTimeoutMS: 30000,
-    });
+      authSource: 'admin',
+    };
+
+    await mongoose.connect(mongoUri, options);
 
     mongoose.connection.on("error", (err) => {
       console.error("MongoDB connection error:", err);
