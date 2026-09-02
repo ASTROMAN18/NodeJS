@@ -3,11 +3,16 @@ const mongoose = require("mongoose");
 async function connectDB() {
   try {
     // Use Railway's MONGO_URL or fall back to MONGODB_URI
-    const mongoUri = process.env.MONGO_URL || process.env.MONGODB_URI;
+    let mongoUri = process.env.MONGO_URL || process.env.MONGODB_URI;
     
     if (!mongoUri) {
       console.warn("MongoDB connection string not found - running without database");
       return;
+    }
+
+    // Add database name if not present
+    if (!mongoUri.includes('/bookstore') && !mongoUri.includes('?')) {
+      mongoUri = mongoUri.replace(/\/$/, '') + '/bookstore';
     }
 
     await mongoose.connect(mongoUri, {
