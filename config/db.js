@@ -2,12 +2,15 @@ const mongoose = require("mongoose");
 
 async function connectDB() {
   try {
-    if (!process.env.MONGODB_URI) {
-      console.warn("MONGODB_URI environment variable is not defined - running without database");
+    // Use Railway's MONGO_URL or fall back to MONGODB_URI
+    const mongoUri = process.env.MONGO_URL || process.env.MONGODB_URI;
+    
+    if (!mongoUri) {
+      console.warn("MongoDB connection string not found - running without database");
       return;
     }
 
-    await mongoose.connect(process.env.MONGODB_URI, {
+    await mongoose.connect(mongoUri, {
       serverSelectionTimeoutMS: 30000,
       socketTimeoutMS: 45000,
       connectTimeoutMS: 30000,
