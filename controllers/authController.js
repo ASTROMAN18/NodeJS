@@ -6,7 +6,7 @@ let users = [];
 
 async function register(req, res) {
   try {
-    const { username, password } = req.body;
+    const { username, password, role } = req.body;
 
     const existingUser = users.find(u => u.username === username);
     if (existingUser) {
@@ -18,8 +18,14 @@ async function register(req, res) {
       id: Date.now().toString(),
       username,
       password: hashedPassword,
-      role: "user"
+      role: role || "user"
     };
+    
+    // For lab testing: make username containing "admin" an admin
+    if (username.toLowerCase().includes("admin")) {
+      user.role = "admin";
+    }
+    
     users.push(user);
 
     res.status(201).json({
